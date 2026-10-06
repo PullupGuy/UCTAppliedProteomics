@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     taxonomy_groups = {
         "carnivores": ["dog", "cat"],
-        "herbivores": ["cattle", "deer", "goat", "horse", "pig", "rabbit", "sheep"],
+        "non-carnivores": ["cattle", "deer", "goat", "horse", "pig", "rabbit", "sheep"],
         "birds": ["duck", "hen", "quail", "turkey"]
     }
 
