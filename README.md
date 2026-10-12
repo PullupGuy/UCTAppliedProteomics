@@ -15,11 +15,32 @@ Execute the main script:
 python main.py
 ```
 
+### Configuration
+
+Edit `main.py` to customize:
+- **Reference groups:** Animals/species with known origin
+- **Unknown samples:** Samples/species to be identified
+- **Taxonomy mapping:** Grouping of species into higher taxonomic categories
+- **Processed data:** CSV file of loaded and preprocessed data
+
+Example configuration:
+```python
+REFERENCE_GROUPS = ["cat", "cattle", "deer", "dog", "duck", ...]
+UNKNOWN_SAMPLES = ["1", "2", "3", ...]
+taxonomy_groups = {
+    "carnivores": ["dog", "cat"],
+    "birds": ["duck", "hen", "quail", "turkey"],
+    ...
+}
+```
+
 You will be prompted to select an analysis type:
 - `full` – Complete pipeline from raw data to results
 - `load` – Data loading and preprocessing only
 - `lib` – Create reference marker libraries
 - `unk` – Analyze unknown samples using existing libraries
+
+Once data have been loaded and preprocessed, they are saved into Dataframe folder, from which it may easily be loaded for further exploration
 
 ## Project Structure
 
@@ -73,28 +94,13 @@ Compares unknown samples directly against all reference species in a single matc
 ### Hierarchical Taxonomy Analysis
 Two-step approach: unknown samples are first matched to higher taxonomy groups (e.g., carnivores, birds), then matched against species within the best-matching group.
 
-## Configuration
-
-Edit `main.py` to customize:
-- **Reference groups:** Animals/species with known origin
-- **Unknown samples:** Samples/species to be identified
-- **Taxonomy mapping:** Grouping of species into higher taxonomic categories
-
-Example configuration:
-```python
-REFERENCE_GROUPS = ["cat", "cattle", "deer", "dog", "duck", ...]
-UNKNOWN_SAMPLES = ["1", "2", "3", ...]
-taxonomy_groups = {
-    "carnivores": ["dog", "cat"],
-    "birds": ["duck", "hen", "quail", "turkey"],
-    ...
-}
-```
-
 ## Output Files
 
 Analysis generates:
-- **Analysis_report[*].xlsx** – Single-level results with summary, detailed markers, and reference library
+- **Analysis_report[*].xlsx** – Species-level results with summary, detailed markers, and reference library
 - **Analysis_report[*]_taxonomy.xlsx** – Hierarchical results with taxonomy assignments and species-level matches
-- **Marker_library[*].csv** – Reference peptide marker libraries
+- **Marker_library[*].csv** – Reference peptide marker library
 - **Analysis_log_[timestamp].txt** – Complete analysis log with all output and user inputs
+
+## Citation
+Meledina et al...
