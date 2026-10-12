@@ -1,187 +1,106 @@
 # UCT Applied Proteomics
 
-This repository contains a Python-based workflow for reference-based taxonomic assignment of archaeological bone samples using LC-MS/MS peptide data. The project is built around a set of reusable analysis scripts for loading peptide data, cleaning it, assigning biological groups, creating marker libraries, and comparing unknown samples against reference groups.
+A Python workflow for reference-based taxonomic assignment of archaeological bone samples using LC-MS/MS peptide data. This project provides a modular analysis pipeline for comparing unknown proteomic samples against reference marker libraries to identify taxonomic origin.
 
-## Default workflow
+## Workflow Overview
 
-The workflow implemented by the scripts follows this pattern:
+The analysis pipeline follows four main entry points:
 
-1. Load peptide/protein data from Excel files
-2. Preprocess and clean the peptide tables
-3. Assign sample groups and taxonomy labels
-4. Build a reference marker library
-5. Compare unknown samples against reference markers
-6. Export summary reports and Excel outputs
+1. **Full Pipeline** – Load raw data → preprocess → build reference markers → analyze unknown samples
+2. **Data Loading & Processing** – Load and clean raw LC-MS/MS data
+3. **Library Creation** – Build reference marker libraries from processed data (single-level or hierarchical)
+4. **Unknown Sample Analysis** – Compare unknown samples against existing reference libraries
 
-## Typical analysis pipeline
+## Running the Analysis
 
-```python
-from Scripts.loaders import load_peptides
-from Scripts.preprocessing import adjust_peptides
-from Scripts.identifiers import get_group_names
-from Scripts.reference_analysis import reference_markers_robust
-from Scripts.unknown_analysis import analyse_unknown, analyse_taxonomy, analyse_species
-from Scripts.exporters import export_results, export_taxonomy
+Execute the main script:
 
-# 1. Load raw peptide data from Excel sheets in a folder
-peptides = load_peptides("data/raw")
-
-# 2. Remove false annotations, duplicates, and unnecessary columns
-peptides = adjust_peptides(peptides, duplicates=False, cut_int=None)
-
-# 3. Assign group names and optional taxonomy labels
-# Example taxonomy map: {"cow": "Bovidae", "pig": "Suidae"}
-peptides = get_group_names(
-    peptides,
-    taxonomy_map={"cow": "Bovidae", "pig": "Suidae"},
-    merge_map=None
-)
-
-# 4. Build reference marker libraries
-reference_groups = sorted(peptides["Group"].unique())
-taxonomy_groups = sorted(peptides["Taxonomy"].unique())
-
-species_markers = reference_markers_robust(
-    peptides,
-    reference_groups,
-    rep_in=1,
-    rep_out=1
-)
-
-taxonomy_markers = reference_markers_robust(
-    peptides,
-    reference_groups,
-    taxonomy_groups=taxonomy_groups,
-    rep_in=1,
-    rep_out=1
-)
-
-# 5. Analyse unknown samples
-unknown_groups = ["Unknown_1", "Unknown_2"]
-unknown_results = analyse_unknown(peptides, species_markers, unknown_groups, replicates=1, keys=True)
-
-taxonomy_results, best_clusters = analyse_taxonomy(peptides, taxonomy_markers, unknown_groups, replicates=1)
-
-species_results = analyse_species(
-    best_clusters,
-    species_markers,
-    {
-        "Bovidae": ["cow", "sheep"],
-        "Suidae": ["pig"]
-    },
-    peptides,
-    unknown_groups,
-    replicates=1,
-)
-
-# 6. Export Excel reports
-export_results(
-    unknown_results,
-    species_markers,
-    peptides,
-    output_folder="results",
-    total_rep=10,
-    ref_replicates=2,
-    un_replicates=1,
-    keys=True,
-)
-
-export_taxonomy(
-    taxonomy_results,
-    species_results,
-    taxonomy_markers,
-    species_markers,
-    peptides,
-    output_folder="results",
-    total_rep=10,
-    ref_replicates=2,
-    un_replicates=1,
-)
+```bash
+python main.py
 ```
 
-## Script overview
+You will be prompted to select an analysis type:
+- `full` – Complete pipeline from raw data to results
+- `load` – Data loading and preprocessing only
+- `lib` – Create reference marker libraries
+- `unk` – Analyze unknown samples using existing libraries
 
-### 1. loaders.py
-Responsible for reading Excel files and loading peptide/protein tables into pandas DataFrames.
+## Project Structure
 
-- `load_peptides_proteins(folder, ignored=None)`
-- `load_peptides(folder, ignored=None)`
-- `load_marker_library(folder, file, key=True)`
-
-### 2. preprocessing.py
-Cleans peptide and protein data before further analysis.
-
-- `adjust_peptides(peptides, duplicates=False, cut_int=None)`
-- `remove_protein_duplicates(proteins, cut_int=None)`
-
-This step removes untrusted peptide annotations, drops duplicates, removes unnecessary columns, and can optionally filter low-intensity values.
-
-### 3. identifiers.py
-Assigns sample groups from sample IDs, and optionally applies taxonomy grouping.
-
-- `get_group_names(peptides, taxonomy_map=None, merge_map=None)`
-
-The function derives a biological group label from the SampleID and can map groups into higher taxonomic categories.
-
-### 4. reference_analysis.py
-Builds a marker library of peptide markers that are characteristic for each reference group.
-
-- `reference_markers(peptides, reference_groups, min_replicates=1)`
-- `reference_markers_robust(peptides, reference_groups, taxonomy_groups=None, rep_in=1, rep_out=1)`
-
-These functions find peptides that are robustly present in a target group and absent or rare in comparison groups.
-
-### 5. unknown_analysis.py
-Compares unknown samples against the reference marker library to estimate the best matches.
-
-- `analyse_unknown(...)`
-- `analyse_taxonomy(...)`
-- `analyse_species(...)`
-
-This produces match scores and confidence values for each unknown sample against reference species or taxonomy groups.
-
-### 6. exporters.py
-Exports analysis outputs to CSV and Excel files.
-
-- `export_marker_library(...)`
-- `export_results(...)`
-- `export_taxonomy(...)`
-
-Outputs typically include summary tables, detailed marker information, and reference libraries for downstream interpretation.
-
-## Recommended project layout
-
-```text
+```
 .
-├── data/
-│   ├── raw/
-│   └── results/
+├── Data/                    # Raw LC-MS/MS Excel files
+├── Dataframe/              # Processed peptide DataFrames (CSV)
+├── Libraries/              # Reference marker libraries (CSV)
+├── Results/                # Analysis output Excel files
+├── Logs/                   # Analysis logs with timestamps
 ├── Scripts/
-│   ├── loaders.py
-│   ├── preprocessing.py
-│   ├── identifiers.py
-│   ├── reference_analysis.py
-│   ├── unknown_analysis.py
-│   └── exporters.py
-├── README.md
-└── requirements.txt
+│   ├── loaders.py          # Load Excel data into DataFrames
+│   ├── preprocessing.py    # Clean and filter peptide data
+│   ├── identifiers.py      # Assign sample groups and taxonomy
+│   ├── reference_analysis.py  # Build marker libraries
+│   ├── unknown_analysis.py    # Compare unknown samples
+│   └── exporters.py        # Export results to Excel/CSV
+└── main.py                 # Main entry point
 ```
 
-## Notes
+## Key Functions
 
-- Input data are assumed to be Excel files with one or more sheets containing peptide data.
-- The workflow is designed around a reference-based classification approach where unknown samples are scored against known reference groups.
-- Marker robustness is controlled by replicate thresholds (`rep_in`, `rep_out`, `replicates`) used during library construction and sample matching.
+### Data Loading (`loaders.py`)
+- `load_peptides(folder, ignored=None)` – Load peptide data from Excel files
+- `load_marker_library(folder, file, key=True)` – Load reference marker library from CSV
 
-## Typical output
+### Preprocessing (`preprocessing.py`)
+- `adjust_peptides(peptides, duplicates=False, cut_int=None)` – Remove false annotations, duplicates, and low-intensity peptides
+- `remove_protein_duplicates(proteins, cut_int=None)` – Clean protein data
 
-The workflow generates files such as:
+### Sample Grouping (`identifiers.py`)
+- `get_group_names(peptides, taxonomy_map=None, merge_map=None)` – Extract group names from sample IDs and apply optional taxonomy mapping
 
-- `Analysis_report[...].xlsx`
-- `Analysis_report[...].xlsx_taxonomy`
-- CSV marker libraries
-- Final summary tables for unknown sample assignment
+### Marker Library Creation (`reference_analysis.py`)
+- `reference_markers_robust(peptides, reference_groups, taxonomy_groups=None, rep_in=1, rep_out=1)` – Build robust marker libraries with configurable replicate thresholds
 
-## License
+### Unknown Sample Analysis (`unknown_analysis.py`)
+- `analyse_unknown(peptides, markers, unknown_groups, replicates=1, keys=True)` – Single-level species matching
+- `analyse_taxonomy(peptides, markers, unknown_groups, replicates=1)` – Higher-level taxonomy assignment
+- `analyse_species(cluster, markers, taxonomy, peptides, unknown_groups, replicates=1)` – Species-level matching within assigned taxonomy
 
-This project does not currently specify a license in the repository files reviewed here. If needed, add one explicitly before public distribution.
+### Results Export (`exporters.py`)
+- `export_marker_library(output_folder, markers, peptides, ...)` – Save marker library to CSV
+- `export_results(analysed_samples, markers, peptides, ...)` – Export single-level analysis to Excel
+- `export_taxonomy(analysed_taxa, analysed_species, ...)` – Export hierarchical analysis to Excel
+
+## Analysis Modes
+
+### Species-Level Analysis
+Compares unknown samples directly against all reference species in a single matching step.
+
+### Hierarchical Taxonomy Analysis
+Two-step approach: unknown samples are first matched to higher taxonomy groups (e.g., carnivores, birds), then matched against species within the best-matching group.
+
+## Configuration
+
+Edit `main.py` to customize:
+- **Reference groups:** Animals/species with known proteomes
+- **Unknown samples:** Samples to be identified
+- **Taxonomy mapping:** Grouping of species into higher taxonomic categories
+- **Replicate thresholds:** Minimum replicates required for robust markers
+
+Example configuration:
+```python
+REFERENCE_GROUPS = ["cat", "cattle", "deer", "dog", "duck", ...]
+UNKNOWN_SAMPLES = ["1", "2", "3", ...]
+taxonomy_groups = {
+    "carnivores": ["dog", "cat"],
+    "birds": ["duck", "hen", "quail", "turkey"],
+    ...
+}
+```
+
+## Output Files
+
+Analysis generates:
+- **Analysis_report[*].xlsx** – Single-level results with summary, detailed markers, and reference library
+- **Analysis_report[*]_taxonomy.xlsx** – Hierarchical results with taxonomy assignments and species-level matches
+- **Marker_library[*].csv** – Reference peptide marker libraries
+- **Analysis_log_[timestamp].txt** – Complete analysis log with all output and user inputs
