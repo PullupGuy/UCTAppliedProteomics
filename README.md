@@ -1,5 +1,3 @@
-# UCT Applied Proteomics
-
 A Python workflow for reference-based taxonomic assignment of archaeological bone samples using LC-MS/MS peptide data. This project provides a modular analysis pipeline for comparing unknown proteomic samples against reference marker libraries to identify taxonomic origin.
 
 ## Workflow Overview
