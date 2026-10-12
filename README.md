@@ -4,10 +4,8 @@ A Python workflow for reference-based taxonomic assignment of archaeological bon
 
 ## Workflow Overview
 
-The analysis pipeline follows four main entry points:
-
-1. **Full Pipeline** – Load raw data → preprocess → build reference markers → analyze unknown samples
-2. **Data Loading & Processing** – Load and clean raw LC-MS/MS data
+1. **Full Pipeline** – Load data in .xlsx format → preprocess → build reference markers → analyze unknown samples
+2. **Data Loading & Processing** – Load and clean LC-MS/MS data
 3. **Library Creation** – Build reference marker libraries from processed data (single-level or hierarchical)
 4. **Unknown Sample Analysis** – Compare unknown samples against existing reference libraries
 
@@ -52,7 +50,6 @@ You will be prompted to select an analysis type:
 
 ### Preprocessing (`preprocessing.py`)
 - `adjust_peptides(peptides, duplicates=False, cut_int=None)` – Remove false annotations, duplicates, and low-intensity peptides
-- `remove_protein_duplicates(proteins, cut_int=None)` – Clean protein data
 
 ### Sample Grouping (`identifiers.py`)
 - `get_group_names(peptides, taxonomy_map=None, merge_map=None)` – Extract group names from sample IDs and apply optional taxonomy mapping
@@ -81,10 +78,9 @@ Two-step approach: unknown samples are first matched to higher taxonomy groups (
 ## Configuration
 
 Edit `main.py` to customize:
-- **Reference groups:** Animals/species with known proteomes
-- **Unknown samples:** Samples to be identified
+- **Reference groups:** Animals/species with known origin
+- **Unknown samples:** Samples/species to be identified
 - **Taxonomy mapping:** Grouping of species into higher taxonomic categories
-- **Replicate thresholds:** Minimum replicates required for robust markers
 
 Example configuration:
 ```python
