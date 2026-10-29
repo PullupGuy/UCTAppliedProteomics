@@ -76,8 +76,13 @@ if __name__ == "__main__":
 
     IGNORED = None
 
-    MERGER = None
+    merger_groups = None
 
+    MERGER = {
+        animal : group
+        for group, animals in merger_groups.items()
+        for animal in animals
+    }
 
     taxonomy_groups = {
         "carnivores": ["dog", "cat"],
