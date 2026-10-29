@@ -21,6 +21,7 @@ Edit `main.py` to customize:
 - **Reference groups:** Animals/species with known origin
 - **Unknown samples:** Samples/species to be identified
 - **Taxonomy mapping:** Grouping of species into higher taxonomic categories
+- **Merger mapping:** Grouping of species together into a larger cluster (for example, chicken and hen)
 - **Processed data:** CSV file of loaded and preprocessed data
 
 Example configuration:
@@ -46,7 +47,7 @@ Once data have been loaded and preprocessed, they are saved into Dataframe folde
 
 ```
 .
-├── Data/                    # Raw LC-MS/MS Excel files
+├── Data/                   # Raw LC-MS/MS Excel files
 ├── Dataframe/              # Processed peptide DataFrames (CSV)
 ├── Libraries/              # Reference marker libraries (CSV)
 ├── Results/                # Analysis output Excel files
@@ -102,5 +103,15 @@ Analysis generates:
 - **Marker_library[*].csv** – Reference peptide marker library
 - **Analysis_log_[timestamp].txt** – Complete analysis log with all output and user inputs
 
+## Interpretation
+Resulting Excel file contains the following columns:
+- **Markers Found** - Number of reference markers found for selected reference species within the unknown sample
+- **Confidence** - Percentage of reference markers for selected reference species out of ALL reference markers found
+- **Reference Markers** - Number of reference markers available in the reference library for selected species
+- **Match Score** - Equal to marker recovery: percentage of how many reference markers from the reference library were found within the unknown sample
+- **Replicates** - Number of both technical and biological replicates present for the unknown sample
+Reference species with the highest confidence for selected unknown sample is highlighted by green colour and bold text
+Confidence should always be interpreted in the context of the reference species library, as it is computed only from all present species
+
 ## Citation
-Meledina et al...
+To be added
