@@ -109,8 +109,8 @@ Resulting Excel file contains the following columns:
 - **Confidence** - Percentage of reference markers for selected reference species out of ALL reference markers found
 - **Reference Markers** - Number of reference markers available in the reference library for selected species
 - **Match Score** - Equal to marker recovery: percentage of how many reference markers from the reference library were found within the unknown sample
-- **Replicates** - Number of both technical and biological replicates present for the unknown sample
-  
+- **Replicates** - Number of both technical and biological replicates present for the unknown sample  
+   
 Reference species with the highest confidence for selected unknown sample is highlighted by green colour and bold text  
 Confidence should always be interpreted in the context of the reference species library, as it is computed only from all present species
 
